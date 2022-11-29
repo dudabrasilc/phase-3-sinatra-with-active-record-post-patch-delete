@@ -1,3 +1,6 @@
+require 'pry'
+
+
 class ApplicationController < Sinatra::Base
   set :default_content_type, 'application/json'
 
@@ -7,6 +10,7 @@ class ApplicationController < Sinatra::Base
   end
 
   get '/games/:id' do
+    # binding.pry
     game = Game.find(params[:id])
 
     game.to_json(only: [:id, :title, :genre, :price], include: {
@@ -14,6 +18,36 @@ class ApplicationController < Sinatra::Base
         user: { only: [:name] }
       } }
     })
+  end
+
+  delete '/reviews/:id' do
+    # binding.pry
+    review = Review.find(params[:id])
+    review.destroy
+    review.to_json
+  end
+
+  post '/reviews' do
+    # binding.pry
+    review = Review.create(
+      score: params[:score],
+      comment: params[:comment],
+      game_id: params[:game_id],
+      user_id: params[:user_id]
+    )
+    review.to_json
+  end
+
+  get '/reviews' do
+    # binding.pry
+    reviews = Review.all
+    reviews.to_json
+  end
+
+  patch '/reviews/:id' do
+    review = Review.find(params[:id])
+    review.update(score: params[:score], comment: params[:comment])
+    review.to_json
   end
 
 end
